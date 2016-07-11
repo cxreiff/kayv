@@ -8,103 +8,91 @@
 
 import SpriteKit
 import GameplayKit
+import CoreMotion
 
 class GameScene: SKScene {
     
-    var entities = [GKEntity]()
-    var graphs = [String : GKGraph]()
+    static let frequency: CGFloat = 4.0
+    static let duration: CGFloat = 2.0
+    
+    var initialTilt: CGFloat?
+    
+    private var entityManager: EntityManager!
     
     private var lastUpdateTime : TimeInterval = 0
-    private var label : SKLabelNode?
-    private var spinnyNode : SKShapeNode?
+    
+    private var corridor: SKEmitterNode!
+    private var crosshairX: SKSpriteNode!
+    private var crosshairY: SKSpriteNode!
+    
+    private var motionManager: CMMotionManager!
+    
+    private var focus: CGPoint { get { return CGPoint(x: (crosshairX?.position.x)!, y: (crosshairY?.position.y)!) } }
     
     override func sceneDidLoad() {
 
         self.lastUpdateTime = 0
         
-        // Get label node from scene and store it for use later
-        self.label = self.childNode(withName: "//helloLabel") as? SKLabelNode
-        if let label = self.label {
-            label.alpha = 0.0
-            label.run(SKAction.fadeIn(withDuration: 2.0))
-        }
+        self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        self.backgroundColor = SKColor.black()
         
-        // Create shape node to use during mouse interaction
-        let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        self.entityManager = EntityManager(scene: self)
         
-        if let spinnyNode = self.spinnyNode {
-            spinnyNode.lineWidth = 2.5
-            
-            spinnyNode.run(SKAction.repeatForever(SKAction.rotate(byAngle: CGFloat(M_PI), duration: 1)))
-            spinnyNode.run(SKAction.sequence([SKAction.wait(forDuration: 0.5),
-                                              SKAction.fadeOut(withDuration: 0.5),
-                                              SKAction.removeFromParent()]))
-        }
-    }
-    
-    
-    func touchDown(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.green()
-            self.addChild(n)
-        }
-    }
-    
-    func touchMoved(toPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.blue()
-            self.addChild(n)
-        }
-    }
-    
-    func touchUp(atPoint pos : CGPoint) {
-        if let n = self.spinnyNode?.copy() as! SKShapeNode? {
-            n.position = pos
-            n.strokeColor = SKColor.red()
-            self.addChild(n)
-        }
+        self.corridor = SKEmitterNode()
+        self.corridor.particleTexture = SKTexture(imageNamed: "corridor")
+        self.corridor.particleBirthRate = GameScene.frequency
+        self.corridor.particleLifetime = GameScene.duration
+        self.corridor.particleAlpha = 0.0
+        self.corridor.particleAlphaSpeed = 1.0 / GameScene.duration
+        self.corridor.particleScaleSpeed = 2.0 / GameScene.duration
+        
+        self.crosshairX = SKSpriteNode(imageNamed: "crosshairX")
+        self.crosshairY = SKSpriteNode(imageNamed: "crosshairY")
+        self.crosshairX.size = CGSize(width: 4, height: self.frame.height)
+        self.crosshairY.size = CGSize(width: self.frame.width, height: 4)
+        self.crosshairX.constraints = [SKConstraint.positionX(SKRange(lowerLimit: self.frame.minX, upperLimit: self.frame.maxX))]
+        self.crosshairY.constraints = [SKConstraint.positionY(SKRange(lowerLimit: self.frame.minY, upperLimit: self.frame.maxY))]
+        
+        self.motionManager = CMMotionManager()
+        self.motionManager.startAccelerometerUpdates()
+        if let tiltData = motionManager.accelerometerData { self.initialTilt = CGFloat(tiltData.acceleration.y) }
+        
+        self.addChild(corridor)
+        self.addChild(crosshairX)
+        self.addChild(crosshairY)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        if let label = self.label {
-            label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
-        }
-        
-        for t in touches { self.touchDown(atPoint: t.location(in: self)) }
+//        for touch in touches {
+//            let location = touch.location(in: self)
+//        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
+//        for touch in touches {
+//            let location = touch.location(in: self)
+//        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
+//        for touch in touches {
+//            let location = touch.location(in: self)
+//        }
     }
-    
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        for t in touches { self.touchUp(atPoint: t.location(in: self)) }
-    }
-    
     
     override func update(_ currentTime: TimeInterval) {
-        // Called before each frame is rendered
         
-        // Initialize _lastUpdateTime if it has not already been
-        if (self.lastUpdateTime == 0) {
-            self.lastUpdateTime = currentTime
-        }
-        
-        // Calculate time since last update
+        if (self.lastUpdateTime == 0) { self.lastUpdateTime = currentTime }
         let dt = currentTime - self.lastUpdateTime
         
-        // Update entities
-        for entity in self.entities {
-            entity.update(withDeltaTime: dt)
-        }
+        entityManager.update(dt)
         
         self.lastUpdateTime = currentTime
+        
+        if let tiltData = motionManager.accelerometerData {
+            if initialTilt == nil { self.initialTilt = CGFloat(tiltData.acceleration.y) }
+            crosshairX?.position.x += CGFloat(tiltData.acceleration.x) * 16
+            crosshairY?.position.y += (CGFloat(tiltData.acceleration.y) - initialTilt!) * 16
+        }
     }
 }
