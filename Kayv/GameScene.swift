@@ -12,14 +12,15 @@ import CoreMotion
 
 class GameScene: SKScene {
     
-    static let frequency: CGFloat = 4.0
-    static let duration: CGFloat = 2.0
+    static let frequency: CGFloat = 6.0
+    static let duration: CGFloat = 4.0
     
     var initialTilt: CGFloat?
     
-    private var entityManager: EntityManager!
-    
     private var lastUpdateTime : TimeInterval = 0
+    
+    private var entityManager: EntityManager!
+    private var cam: SKCameraNode!
     
     private var corridor: SKEmitterNode!
     private var crosshairX: SKSpriteNode!
@@ -27,7 +28,7 @@ class GameScene: SKScene {
     
     private var motionManager: CMMotionManager!
     
-    private var focus: CGPoint { get { return CGPoint(x: (crosshairX?.position.x)!, y: (crosshairY?.position.y)!) } }
+    private var focus: CGPoint { get { return CGPoint(x: crosshairX.position.x, y: crosshairY.position.y) } }
     
     override func sceneDidLoad() {
 
@@ -37,6 +38,8 @@ class GameScene: SKScene {
         self.backgroundColor = SKColor.black()
         
         self.entityManager = EntityManager(scene: self)
+        self.cam = SKCameraNode()
+        self.camera = cam
         
         self.corridor = SKEmitterNode()
         self.corridor.particleTexture = SKTexture(imageNamed: "corridor")
@@ -44,12 +47,12 @@ class GameScene: SKScene {
         self.corridor.particleLifetime = GameScene.duration
         self.corridor.particleAlpha = 0.0
         self.corridor.particleAlphaSpeed = 1.0 / GameScene.duration
-        self.corridor.particleScaleSpeed = 2.0 / GameScene.duration
+        self.corridor.particleScaleSpeed = 4.0 / GameScene.duration
         
         self.crosshairX = SKSpriteNode(imageNamed: "crosshairX")
         self.crosshairY = SKSpriteNode(imageNamed: "crosshairY")
-        self.crosshairX.size = CGSize(width: 4, height: self.frame.height)
-        self.crosshairY.size = CGSize(width: self.frame.width, height: 4)
+        self.crosshairX.size = CGSize(width: 4, height: self.frame.height * 2.0)
+        self.crosshairY.size = CGSize(width: self.frame.width * 2.0, height: 4)
         self.crosshairX.constraints = [SKConstraint.positionX(SKRange(lowerLimit: self.frame.minX, upperLimit: self.frame.maxX))]
         self.crosshairY.constraints = [SKConstraint.positionY(SKRange(lowerLimit: self.frame.minY, upperLimit: self.frame.maxY))]
         
@@ -57,27 +60,31 @@ class GameScene: SKScene {
         self.motionManager.startAccelerometerUpdates()
         if let tiltData = motionManager.accelerometerData { self.initialTilt = CGFloat(tiltData.acceleration.y) }
         
+        self.addChild(cam)
         self.addChild(corridor)
         self.addChild(crosshairX)
         self.addChild(crosshairY)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for touch in touches {
-//            let location = touch.location(in: self)
-//        }
+        for touch in touches {
+            let location = touch.location(in: self)
+            print(location)
+        }
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for touch in touches {
-//            let location = touch.location(in: self)
-//        }
+        for touch in touches {
+            let location = touch.location(in: self)
+            print(location)
+        }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        for touch in touches {
-//            let location = touch.location(in: self)
-//        }
+        for touch in touches {
+            let location = touch.location(in: self)
+            print(location)
+        }
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -94,5 +101,7 @@ class GameScene: SKScene {
             crosshairX?.position.x += CGFloat(tiltData.acceleration.x) * 16
             crosshairY?.position.y += (CGFloat(tiltData.acceleration.y) - initialTilt!) * 16
         }
+        
+        cam.position = CGPoint(x: crosshairX.position.x / 4.0, y: crosshairY.position.y / 8.0)
     }
 }
