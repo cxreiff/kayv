@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:Kayv.xcodeproj">
+      location = "self:/Users/jaxreiff/Dropbox/code/workspace/kayv/Kayv/kayv.xcodeproj">
    </FileRef>
 </Workspace>
