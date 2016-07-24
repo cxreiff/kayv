@@ -8,17 +8,16 @@
 
 import SpriteKit
 import GameplayKit
-import CoreMotion
 
 class GameScene: SKScene {
     
-    static let frequency: CGFloat = 6.0
-    static let duration: CGFloat = 4.0
+    static var intensity: CGFloat = 0.0
     
-    private var initialTilt: CGFloat?
+    static var frequency: CGFloat = 6.0
+    static var duration: CGFloat = 6.0
+    
     private var lastUpdateTime : TimeInterval = 0
     private var timeElapsedSinceSpawn: TimeInterval = 0
-    private var isTransitioning: Bool = false
     
     private var targetTouch: UITouch?
     
@@ -26,12 +25,7 @@ class GameScene: SKScene {
     private var cam: SKCameraNode!
     
     private var corridor: SKEmitterNode!
-    private var crosshairX: SKSpriteNode!
-    private var crosshairY: SKSpriteNode!
-    
-    private var motionManager: CMMotionManager!
-    
-    private var focus: CGPoint { get { return CGPoint(x: crosshairX.position.x, y: crosshairY.position.y) } }
+    private var crosshair: Crosshair!
     
     override func sceneDidLoad() {
 
@@ -44,6 +38,8 @@ class GameScene: SKScene {
         self.cam = SKCameraNode()
         self.camera = cam
         
+        self.crosshair = Crosshair(scene: self)
+        
         self.corridor = SKEmitterNode()
         self.corridor.particleTexture = SKTexture(imageNamed: "corridor")
         self.corridor.particleBirthRate = GameScene.frequency
@@ -54,42 +50,26 @@ class GameScene: SKScene {
         self.corridor.particleAlphaSpeed = 1.0 / GameScene.duration
         self.corridor.particleScaleSpeed = 4.0 / GameScene.duration
         
-        self.crosshairX = SKSpriteNode(imageNamed: "crosshairX")
-        self.crosshairY = SKSpriteNode(imageNamed: "crosshairY")
-        self.crosshairX.color = SKColor.white()
-        self.crosshairY.color = SKColor.white()
-        self.crosshairX.size = CGSize(width: 4, height: self.frame.height * 2.0)
-        self.crosshairY.size = CGSize(width: self.frame.width * 2.0, height: 4)
-        self.crosshairX.constraints = [SKConstraint.positionX(SKRange(lowerLimit: self.frame.minX,
-                                                                      upperLimit: self.frame.maxX))]
-        self.crosshairY.constraints = [SKConstraint.positionY(SKRange(lowerLimit: self.frame.minY,
-                                                                      upperLimit: self.frame.maxY))]
-        
-        self.motionManager = CMMotionManager()
-        self.motionManager.startAccelerometerUpdates()
-        if let tiltData = motionManager.accelerometerData { self.initialTilt = CGFloat(tiltData.acceleration.y) }
-        
         self.addChild(cam)
         self.addChild(corridor)
-        self.addChild(crosshairX)
-        self.addChild(crosshairY)
+        self.addChild(crosshair)
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         targetTouch = touches.first!
-        
-        colorShift(red: 0.0, green: 1.0, blue: 1.0, duration: 4.0)
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-
+        let dot = SKSpriteNode(imageNamed: "dot")
+        dot.position = crosshair.position
+        dot.colorBlendFactor = 1.0
+        dot.color = SKColor.red()
+        self.addChild(dot)
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         for touch in touches {
             if touch == targetTouch { targetTouch = nil }
-            
-            colorShift(red: 0.0, green: 0.0, blue: 0.0, duration: 4.0)
         }
     }
     
@@ -97,44 +77,68 @@ class GameScene: SKScene {
         
         if (self.lastUpdateTime == 0) { self.lastUpdateTime = currentTime }
         let dt = currentTime - self.lastUpdateTime
+        self.lastUpdateTime = currentTime
         
         entityManager.update(dt)
         
-        self.lastUpdateTime = currentTime
-        
-        if let location = targetTouch?.location(in: self) {
-            crosshairX.position.x += (location.x - crosshairX.position.x) * 0.4
-            crosshairY.position.y += (location.y - crosshairY.position.y) * 0.4
+        self.timeElapsedSinceSpawn += dt
+        if timeElapsedSinceSpawn > 10 {
+            GameScene.duration = GameScene.duration * 0.8
+            self.timeElapsedSinceSpawn = 0
         }
         
-//        if let tiltData = motionManager.accelerometerData {
-//            if initialTilt == nil { self.initialTilt = CGFloat(tiltData.acceleration.y) }
-//            crosshairX?.position.x += CGFloat(tiltData.acceleration.x) * 16
-//            crosshairY?.position.y += (CGFloat(tiltData.acceleration.y) - initialTilt!) * 16
-//        }
+        // Move crosshairs asymptotically towards touch, when touch lifts move back to center.
+        if let location = targetTouch?.location(in: self) {
+            crosshair.position.x += (location.x - crosshair.position.x) * 0.4
+            crosshair.position.y += (location.y - crosshair.position.y) * 0.4
+        } else {
+            crosshair.position.x += (0.0 - crosshair.position.x) * 0.2
+            crosshair.position.y += (0.0 - crosshair.position.y) * 0.2
+        }
         
-//        self.timeElapsedSinceSpawn += dt
-//        if timeElapsedSinceSpawn > 30 {
-//            self.addChild(SKSpriteNode(imageNamed: "corridor"))
-//            self.timeElapsedSinceSpawn = 0
-//        }
-        
-        if isTransitioning { corridor.particleColor = crosshairX.color }
-        
-        cam.position = CGPoint(x: crosshairX.position.x / 4.0, y: crosshairY.position.y / 8.0)
+        cam.position = CGPoint(x: crosshair.position.x / 4.0, y: crosshair.position.y / 8.0)
     }
     
-    private func colorShift(red: CGFloat, green: CGFloat, blue: CGFloat, duration: TimeInterval) {
-        isTransitioning = true
-        let background = SKColor(red: red, green: green, blue: blue, alpha: 1.0)
-        self.run(SKAction.sequence([SKAction.colorize(with: background, colorBlendFactor: 1.0, duration: duration),
-                                    SKAction.run({ self.isTransitioning = false })]))
-        if (red + green + blue > 1.5) {
-            crosshairX.run(SKAction.colorize(with: SKColor.black(), colorBlendFactor: 1.0, duration: duration))
-            crosshairY.run(SKAction.colorize(with: SKColor.black(), colorBlendFactor: 1.0, duration: duration))
-        } else {
-            crosshairX.run(SKAction.colorize(with: SKColor.white(), colorBlendFactor: 1.0, duration: duration))
-            crosshairY.run(SKAction.colorize(with: SKColor.white(), colorBlendFactor: 1.0, duration: duration))
+    class Crosshair: SKNode {
+        private let crosshairX: SKSpriteNode
+        private let crosshairY: SKSpriteNode
+        
+        init(scene: SKScene) {
+            crosshairX = SKSpriteNode(imageNamed: "crosshairX")
+            crosshairY = SKSpriteNode(imageNamed: "crosshairY")
+            crosshairX.color = SKColor.white()
+            crosshairY.color = SKColor.white()
+            crosshairX.size = CGSize(width: 2, height: scene.frame.height * 2.0)
+            crosshairY.size = CGSize(width: scene.frame.width * 2.0, height: 2)
+            
+            let emitterX = SKEmitterNode()
+            emitterX.particleTexture = SKTexture(imageNamed: "crosshairX")
+            emitterX.particleBirthRate = 32.0
+            emitterX.particleLifetime = 0.1
+            emitterX.particleSize = crosshairX.size
+            emitterX.particleAlpha = 0.5
+            emitterX.particleAlphaSpeed = -5
+            emitterX.targetNode = scene
+            
+            let emitterY = SKEmitterNode()
+            emitterY.particleTexture = SKTexture(imageNamed: "crosshairY")
+            emitterY.particleBirthRate = 32.0
+            emitterY.particleLifetime = 0.1
+            emitterY.particleSize = crosshairY.size
+            emitterY.particleAlpha = 0.5
+            emitterY.particleAlphaSpeed = -5
+            emitterY.targetNode = scene
+            
+            super.init()
+            
+            crosshairX.addChild(emitterX)
+            crosshairY.addChild(emitterY)
+            self.addChild(crosshairX)
+            self.addChild(crosshairY)
+        }
+        
+        required init?(coder aDecoder: NSCoder) {
+            fatalError("init(coder:) has not been implemented")
         }
     }
 }

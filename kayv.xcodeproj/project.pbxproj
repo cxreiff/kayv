@@ -17,6 +17,7 @@
 		E480FF291D3A5FCF0044C90F /* corridor.png in Resources */ = {isa = PBXBuildFile; fileRef = E480FF261D3A5FCF0044C90F /* corridor.png */; };
 		E480FF2A1D3A5FCF0044C90F /* crosshairX.png in Resources */ = {isa = PBXBuildFile; fileRef = E480FF271D3A5FCF0044C90F /* crosshairX.png */; };
 		E480FF2B1D3A5FCF0044C90F /* crosshairY.png in Resources */ = {isa = PBXBuildFile; fileRef = E480FF281D3A5FCF0044C90F /* crosshairY.png */; };
+		E4EC47651D455DBC008044EE /* dot.png in Resources */ = {isa = PBXBuildFile; fileRef = E4EC47641D455DBC008044EE /* dot.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,7 @@
 		E480FF261D3A5FCF0044C90F /* corridor.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = corridor.png; sourceTree = "<group>"; };
 		E480FF271D3A5FCF0044C90F /* crosshairX.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crosshairX.png; sourceTree = "<group>"; };
 		E480FF281D3A5FCF0044C90F /* crosshairY.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = crosshairY.png; sourceTree = "<group>"; };
+		E4EC47641D455DBC008044EE /* dot.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = dot.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 		E480FF251D3A5FCF0044C90F /* resources */ = {
 			isa = PBXGroup;
 			children = (
+				E4EC47641D455DBC008044EE /* dot.png */,
 				E480FF261D3A5FCF0044C90F /* corridor.png */,
 				E480FF271D3A5FCF0044C90F /* crosshairX.png */,
 				E480FF281D3A5FCF0044C90F /* crosshairY.png */,
@@ -169,6 +172,7 @@
 				655725921D3208C900CCF5A9 /* Assets.xcassets in Resources */,
 				E480FF291D3A5FCF0044C90F /* corridor.png in Resources */,
 				65C0011A1D3334E9008476AD /* LaunchScreen.storyboard in Resources */,
+				E4EC47651D455DBC008044EE /* dot.png in Resources */,
 				E480FF2A1D3A5FCF0044C90F /* crosshairX.png in Resources */,
 				E480FF2B1D3A5FCF0044C90F /* crosshairY.png in Resources */,
 			);
