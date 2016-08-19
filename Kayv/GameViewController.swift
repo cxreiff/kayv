@@ -19,7 +19,7 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
             view.ignoresSiblingOrder = true
-            view.presentScene(GameScene(size: view.bounds.size))
+            view.presentScene(CaveScene(size: view.bounds.size))
         }
     }
     

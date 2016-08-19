@@ -15,7 +15,9 @@ class EntityManager {
     var toRemove = Set<GKEntity>()
     weak var scene: SKScene!
     lazy var componentSystems: [GKComponentSystem] = {
-        return []
+        let controlSystem = GKComponentSystem(componentClass: ControlComponent.self)
+        let trailSystem = GKComponentSystem(componentClass: TrailComponent.self)
+        return [controlSystem, trailSystem]
     }()
     
     init(scene: SKScene) {

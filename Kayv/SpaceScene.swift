@@ -9,12 +9,19 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+class SpaceScene: SKScene {
     
     static var intensity: CGFloat = 0.0
     
     static var frequency: CGFloat = 6.0
     static var duration: CGFloat = 6.0
+    
+    static var lighter_blue = SKColor(hue: 0.56, saturation: 0.56, brightness: 1.0, alpha: 1.0)
+    static var darker_blue = SKColor(hue: 0.56, saturation: 0.56, brightness: 0.64, alpha: 1.0)
+    static var lighter_salmon = SKColor(hue: 0.0, saturation: 0.6, brightness: 1.0, alpha: 1.0)
+    static var darker_salmon = SKColor(hue: 0.0, saturation: 0.6, brightness: 0.64, alpha: 1.0)
+    static var lighter_magenta = SKColor(hue: 0.93, saturation: 1.0, brightness: 1.0, alpha: 1.0)
+    static var darker_magenta = SKColor(hue: 0.93, saturation: 1.0, brightness: 0.64, alpha: 1.0)
     
     private var lastUpdateTime : TimeInterval = 0
     private var timeElapsedSinceSpawn: TimeInterval = 0
@@ -42,13 +49,13 @@ class GameScene: SKScene {
         
         self.corridor = SKEmitterNode()
         self.corridor.particleTexture = SKTexture(imageNamed: "corridor")
-        self.corridor.particleBirthRate = GameScene.frequency
-        self.corridor.particleLifetime = GameScene.duration
+        self.corridor.particleBirthRate = SpaceScene.frequency
+        self.corridor.particleLifetime = SpaceScene.duration
         self.corridor.particleColorBlendFactor = 1.0
         self.corridor.particleColor = SKColor.white()
         self.corridor.particleAlpha = 0.0
-        self.corridor.particleAlphaSpeed = 1.0 / GameScene.duration
-        self.corridor.particleScaleSpeed = 4.0 / GameScene.duration
+        self.corridor.particleAlphaSpeed = 1.0 / SpaceScene.duration
+        self.corridor.particleScaleSpeed = 4.0 / SpaceScene.duration
         
         self.addChild(cam)
         self.addChild(corridor)
@@ -63,7 +70,7 @@ class GameScene: SKScene {
         let dot = SKSpriteNode(imageNamed: "dot")
         dot.position = crosshair.position
         dot.colorBlendFactor = 1.0
-        dot.color = SKColor.red()
+        dot.color = arc4random_uniform(UInt32(2.0)) > UInt32(0) ? SpaceScene.lighter_salmon : SpaceScene.darker_salmon
         self.addChild(dot)
     }
     
@@ -81,12 +88,6 @@ class GameScene: SKScene {
         
         entityManager.update(dt)
         
-        self.timeElapsedSinceSpawn += dt
-        if timeElapsedSinceSpawn > 10 {
-            GameScene.duration = GameScene.duration * 0.8
-            self.timeElapsedSinceSpawn = 0
-        }
-        
         // Move crosshairs asymptotically towards touch, when touch lifts move back to center.
         if let location = targetTouch?.location(in: self) {
             crosshair.position.x += (location.x - crosshair.position.x) * 0.4
@@ -97,6 +98,8 @@ class GameScene: SKScene {
         }
         
         cam.position = CGPoint(x: crosshair.position.x / 4.0, y: crosshair.position.y / 8.0)
+        SpaceScene.intensity += 0.001
+        if SpaceScene.intensity > 1.0 { }
     }
     
     class Crosshair: SKNode {
