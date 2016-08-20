@@ -16,16 +16,16 @@ class MenuScene : SKScene {
     
     override init(size: CGSize) {
         
-        caveButton = SKSpriteNode(texture: SKTexture(imageNamed: "start-button"), color: UIColor.clear(),
+        caveButton = SKSpriteNode(texture: SKTexture(imageNamed: "start-button"), color: UIColor.clear,
                                   size: CGSize(width: size.width / 3, height: size.height / 10))
-        spaceButton = SKSpriteNode(texture: SKTexture(imageNamed: "start-button"), color: UIColor.clear(),
+        spaceButton = SKSpriteNode(texture: SKTexture(imageNamed: "start-button"), color: UIColor.clear,
                                   size: CGSize(width: size.width / 3, height: size.height / 10))
         
         super.init(size: size)
         
         self.anchorPoint = CGPoint(x: 0.5, y: 0)
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: 0.0)
-        self.backgroundColor = SKColor.black()
+        self.backgroundColor = SKColor.black
         
         let camera = SKCameraNode()
         camera.position = CGPoint(x: 0, y: self.frame.midY)
@@ -39,10 +39,10 @@ class MenuScene : SKScene {
         player.sprite.node.alpha = 0.0
         player.trail.emitter.particleAlpha = 0.0
         
-        caveButton.position = CGPoint(x: 0, y: self.size.height * (1 / 16))
+        caveButton.position = CGPoint(x: 0, y: self.size.height * (1 / 12))
         caveButton.alpha = 0.0
         caveButton.zPosition = 0.4
-        spaceButton.position = CGPoint(x: 0, y: self.size.height * (15 / 16))
+        spaceButton.position = CGPoint(x: 0, y: self.size.height * (11 / 12))
         spaceButton.alpha = 0.0
         spaceButton.zPosition = 0.4
         spaceButton.yScale = -1.0

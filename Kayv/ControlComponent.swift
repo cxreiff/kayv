@@ -29,8 +29,8 @@ class ControlComponent: GKComponent {
         self.touch = touch
     }
     
-    override func update(withDeltaTime seconds: TimeInterval) {
-        if let touch = self.touch, scene = self.scene, node = self.entity?.componentForClass(SpriteComponent.self)?.node {
+    override func update(deltaTime seconds: TimeInterval) {
+        if let touch = self.touch, let scene = self.scene, let node = self.entity?.component(ofType: SpriteComponent.self)?.node {
             var movement = ControlComponent.touchVectorInScene(scene, touch: touch, center: node.position)
             movement.dx = movement.dx * self.force
             movement.dy = movement.dy * self.force

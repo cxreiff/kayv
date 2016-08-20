@@ -19,15 +19,11 @@ class GameViewController: UIViewController {
             view.showsFPS = true
             view.showsNodeCount = true
             view.ignoresSiblingOrder = true
-            view.presentScene(CaveScene(size: view.bounds.size))
+            view.presentScene(MenuScene(size: view.bounds.size))
         }
     }
     
     override func loadView() {
-        self.view = SKView(frame: UIScreen.main().bounds)
-    }
-
-    override func prefersStatusBarHidden() -> Bool {
-        return true
+        self.view = SKView(frame: UIScreen.main.bounds)
     }
 }

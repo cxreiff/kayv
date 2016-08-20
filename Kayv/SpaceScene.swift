@@ -39,7 +39,7 @@ class SpaceScene: SKScene {
         self.lastUpdateTime = 0
         
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        self.backgroundColor = SKColor.black()
+        self.backgroundColor = SKColor.black
         
         self.entityManager = EntityManager(scene: self)
         self.cam = SKCameraNode()
@@ -52,7 +52,7 @@ class SpaceScene: SKScene {
         self.corridor.particleBirthRate = SpaceScene.frequency
         self.corridor.particleLifetime = SpaceScene.duration
         self.corridor.particleColorBlendFactor = 1.0
-        self.corridor.particleColor = SKColor.white()
+        self.corridor.particleColor = SKColor.white
         self.corridor.particleAlpha = 0.0
         self.corridor.particleAlphaSpeed = 1.0 / SpaceScene.duration
         self.corridor.particleScaleSpeed = 4.0 / SpaceScene.duration
@@ -109,8 +109,8 @@ class SpaceScene: SKScene {
         init(scene: SKScene) {
             crosshairX = SKSpriteNode(imageNamed: "crosshairX")
             crosshairY = SKSpriteNode(imageNamed: "crosshairY")
-            crosshairX.color = SKColor.white()
-            crosshairY.color = SKColor.white()
+            crosshairX.color = SKColor.white
+            crosshairY.color = SKColor.white
             crosshairX.size = CGSize(width: 2, height: scene.frame.height * 2.0)
             crosshairY.size = CGSize(width: scene.frame.width * 2.0, height: 2)
             

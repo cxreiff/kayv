@@ -41,7 +41,7 @@ class TrailComponent: GKComponent {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func update(withDeltaTime seconds: TimeInterval) {
+    override func update(deltaTime seconds: TimeInterval) {
         // Shrink particle respective to speed
         if let velocity = emitter.parent?.physicsBody?.velocity {
             self.emitter.particleScaleSpeed = -0.01 * (sqrt(pow(velocity.dx, 2) + pow(velocity.dy, 2)))

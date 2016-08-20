@@ -13,10 +13,10 @@ class AvatarComponent: GKComponent {
     
     // Constants
     static let Key = "pixels"
-    static let DocumentsDirectory = FileManager().urlsForDirectory(.documentDirectory, inDomains: .userDomainMask).first!
-    static let ArchiveURL = try! DocumentsDirectory.appendingPathComponent("player")
+    static let DocumentsDirectory = FileManager().urls(for: .documentDirectory, in: .userDomainMask).first!
+    static let ArchiveURL = DocumentsDirectory.appendingPathComponent("player")
     
-    static let TileColors = [SKColor.clear(), SKColor.cyan(), SKColor.magenta(), SKColor.yellow()]
+    static let TileColors = [SKColor.clear, SKColor.cyan, SKColor.magenta, SKColor.yellow]
     
     // Properties
     var pixels: [[Int]]
@@ -67,12 +67,12 @@ class AvatarComponent: GKComponent {
     }
     
     func save() {
-        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: AvatarComponent.ArchiveURL.path!)
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(self, toFile: AvatarComponent.ArchiveURL.path)
         if !isSuccessfulSave { print("error: failed to save player avatar") }
     }
     
     class func loadAvatar(_ node: SKSpriteNode) -> AvatarComponent? {
-        let avatar = NSKeyedUnarchiver.unarchiveObject(withFile: AvatarComponent.ArchiveURL.path!) as? AvatarComponent
+        let avatar = NSKeyedUnarchiver.unarchiveObject(withFile: AvatarComponent.ArchiveURL.path) as? AvatarComponent
         avatar?.initializeTiles(node)
         return avatar
     }

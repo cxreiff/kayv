@@ -15,13 +15,13 @@ class Crate: GKEntity {
     
     init(scene: SKScene, size: CGSize) {
         self.sprite = SpriteComponent(texture: SKTexture(imageNamed: "crate"), size: size)
-        let trail = TrailComponent(scene: scene, node: sprite.node, color: SKColor.red())
+        let trail = TrailComponent(scene: scene, node: sprite.node, color: SKColor.red)
         
         super.init()
         
         sprite.node.physicsBody = SKPhysicsBody(rectangleOf: size)
         sprite.node.physicsBody?.allowsRotation = false
-        trail.emitter.particleColor = SKColor.red()
+        trail.emitter.particleColor = SKColor.red
         trail.emitter.particleLifetime = 100.0
         
         self.addComponent(sprite)

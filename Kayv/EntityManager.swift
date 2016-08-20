@@ -26,12 +26,12 @@ class EntityManager {
     
     func update(_ deltaTime: CFTimeInterval) {
         for componentSystem in componentSystems {
-            componentSystem.update(withDeltaTime: deltaTime)
+            componentSystem.update(deltaTime: deltaTime)
         }
         
         for entity in toRemove {
             for componentSystem in componentSystems {
-                componentSystem.removeComponent(with: entity)
+                componentSystem.removeComponent(foundIn: entity)
             }
         }
         toRemove.removeAll()
@@ -40,12 +40,12 @@ class EntityManager {
     func add(_ entity: GKEntity) {
         entities.insert(entity)
         
-        if let spriteNode = entity.componentForClass(SpriteComponent.self)?.node {
+        if let spriteNode = entity.component(ofType: SpriteComponent.self)?.node {
             scene.addChild(spriteNode)
         }
         
         for componentSystem in componentSystems {
-            componentSystem.addComponent(with: entity)
+            componentSystem.addComponent(foundIn: entity)
         }
     }
     func add(_ entities: [GKEntity]) {
@@ -53,7 +53,7 @@ class EntityManager {
     }
     
     func remove(_ entity: GKEntity) {
-        if let spriteNode = entity.componentForClass(SpriteComponent.self)?.node {
+        if let spriteNode = entity.component(ofType: SpriteComponent.self)?.node {
             spriteNode.removeFromParent()
         }
         toRemove.insert(entity)

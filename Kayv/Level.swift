@@ -63,7 +63,7 @@ class Level: SKNode {
     }
     
     private func loadLevel(scene: SKScene, levelID: Int) -> [GKEntity]? {
-        if let levelPath = Bundle.main.pathForResource("level" + String(levelID), ofType: "txt") {
+        if let levelPath = Bundle.main.path(forResource: "level" + String(levelID), ofType: "txt") {
             if let levelString = try? String(contentsOfFile: levelPath) {
                 let lines = levelString.components(separatedBy: "\n")
                 var entities = [GKEntity]()

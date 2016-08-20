@@ -31,7 +31,7 @@ class CaveScene: SKScene, SKPhysicsContactDelegate {
         // Configure Scene
         
         self.anchorPoint = CGPoint(x: 0.5, y: 0.5)
-        self.backgroundColor = SKColor.black()
+        self.backgroundColor = SKColor.black
         self.physicsWorld.gravity = CGVector(dx: 0.0, dy: -1.0)
         
         // Initialize Members

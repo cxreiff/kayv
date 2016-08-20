@@ -20,7 +20,7 @@ class Player: GKEntity {
     init(scene: SKScene, size: CGSize) {
         self.sprite = SpriteComponent(texture: (SKTexture(imageNamed: "player")), size: size)
         self.control = ControlComponent(scene: scene, force: 256 )
-        self.trail = TrailComponent(scene: scene, node: self.sprite.node, color: SKColor.white())
+        self.trail = TrailComponent(scene: scene, node: self.sprite.node, color: SKColor.white)
         
         if let loadedAvatar = AvatarComponent.loadAvatar(sprite.node) {
             self.avatar = loadedAvatar
